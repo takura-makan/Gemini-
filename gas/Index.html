@@ -41,6 +41,7 @@
     }
 
     .hero {
+      position: relative;
       min-height: 360px;
       padding: clamp(26px, 5vw, 54px);
       display: grid;
@@ -50,6 +51,28 @@
         radial-gradient(circle at 82% 12%, rgba(47, 128, 237, 0.24), transparent 32%),
         radial-gradient(circle at 10% 22%, rgba(0, 166, 118, 0.22), transparent 34%),
         linear-gradient(135deg, #101410 0%, #161b14 54%, #251a15 100%);
+    }
+
+    .admin-shortcut {
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      display: inline-flex;
+      align-items: center;
+      min-height: 36px;
+      padding: 0 12px;
+      color: rgba(248, 255, 247, 0.92);
+      background: rgba(248, 255, 247, 0.1);
+      border: 1px solid rgba(248, 255, 247, 0.24);
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 850;
+      backdrop-filter: blur(12px);
+    }
+
+    .admin-shortcut:focus-visible {
+      outline: 2px solid var(--gold);
+      outline-offset: 2px;
     }
 
     .label {
@@ -231,7 +254,8 @@
     }
 
     @media (max-width: 560px) {
-      .hero { min-height: 420px; padding: 24px; }
+      .hero { min-height: 420px; padding: 74px 24px 24px; }
+      .admin-shortcut { left: 24px; right: auto; }
       .cards { grid-template-columns: 1fr; }
       .card-footer, .meta { align-items: flex-start; flex-direction: column; }
       .audience { text-align: left; }
@@ -241,6 +265,7 @@
 <body>
   <section class="dispatch" aria-label="Workspace Gemini Dispatch">
     <div class="hero">
+      <a class="admin-shortcut" href="<?= publisherUrl ?>" target="_blank" rel="noreferrer">管理者画面</a>
       <div>
         <p class="label">Internal update intelligence</p>
         <h1>Workspace / Gemini Dispatch</h1>

@@ -51,6 +51,7 @@ const CONFIG = {
 function doGet(e) {
   const mode = e && e.parameter && e.parameter.mode;
   const template = HtmlService.createTemplateFromFile(mode === 'publisher' ? 'Publisher' : 'Index');
+  template.publisherUrl = `${ScriptApp.getService().getUrl()}?mode=publisher`;
   return template
     .evaluate()
     .setTitle(mode === 'publisher' ? 'Dispatch Publisher' : 'Workspace / Gemini Dispatch')
