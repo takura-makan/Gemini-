@@ -1,0 +1,14 @@
+# Local prototypes and planning notes
+/final-output-preview.html
+/google-sites-embed-widget.html
+/google-sites-page-kit.md
+/index.html
+/publisher.html
+/project/
+
+# Local credentials and dependencies
+.clasprc.json
+node_modules/
+.env
+.env.*
+

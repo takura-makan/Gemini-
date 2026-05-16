@@ -1,0 +1,528 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <base target="_top">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    :root {
+      --ink: #151716;
+      --muted: #66706a;
+      --paper: #f6f7f1;
+      --panel: #ffffff;
+      --line: #d9ded7;
+      --green: #00a676;
+      --blue: #2f80ed;
+      --coral: #ff6b4a;
+      --gold: #ffbf3f;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: "Noto Sans JP", "Yu Gothic", "Hiragino Kaku Gothic ProN", system-ui, sans-serif;
+      letter-spacing: 0;
+    }
+
+    a { color: var(--blue); font-weight: 800; text-decoration: none; }
+    button, input, select, textarea { font: inherit; }
+
+    .wrap {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 30px;
+      line-height: 1.1;
+    }
+
+    p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+
+    .manualAdd {
+      display: grid;
+      grid-template-columns: minmax(240px, 1fr) auto;
+      gap: 8px;
+      width: min(560px, 100%);
+    }
+
+    .sourceAdd {
+      display: grid;
+      grid-template-columns: minmax(180px, 1fr) minmax(170px, 0.8fr) minmax(150px, 0.7fr) auto;
+      gap: 8px;
+      width: min(860px, 100%);
+    }
+
+    .searchAdd {
+      display: grid;
+      grid-template-columns: minmax(220px, 1fr) minmax(180px, 0.8fr) minmax(150px, 0.7fr) auto;
+      gap: 8px;
+      width: min(920px, 100%);
+    }
+
+    button {
+      min-height: 38px;
+      padding: 0 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      cursor: pointer;
+      font-weight: 850;
+    }
+
+    button.primary {
+      background: var(--green);
+      border-color: var(--green);
+      color: #06100c;
+    }
+
+    button.warn {
+      background: var(--gold);
+      border-color: var(--gold);
+      color: #171106;
+    }
+
+    button.danger {
+      color: #7c2e1b;
+    }
+
+    .message {
+      margin: 12px 0 16px;
+      padding: 12px 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .message.error {
+      background: #fff4ee;
+      border-color: #ffb49d;
+      color: #7c2e1b;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+
+    .card {
+      display: grid;
+      grid-template-columns: minmax(260px, 0.78fr) minmax(360px, 1.22fr);
+      gap: 14px;
+      padding: 14px;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+
+    .sourceBox {
+      display: grid;
+      align-content: start;
+      gap: 12px;
+      padding: 12px;
+      background: #fbfcf8;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .pill {
+      display: inline-flex;
+      min-height: 24px;
+      align-items: center;
+      padding: 0 8px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 850;
+    }
+
+    .sourceTitle {
+      margin: 0;
+      font-size: 18px;
+      line-height: 1.35;
+    }
+
+    .excerpt {
+      max-height: 230px;
+      overflow: auto;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    .checklist {
+      padding: 10px 12px;
+      background: #f4f8ff;
+      border: 1px solid #cdddf8;
+      border-radius: 8px;
+      color: #24466f;
+      font-size: 13px;
+      line-height: 1.65;
+      white-space: pre-line;
+    }
+
+    .editor {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    label {
+      display: grid;
+      gap: 5px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 850;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--ink);
+      outline: none;
+    }
+
+    input, select {
+      min-height: 38px;
+      padding: 0 10px;
+    }
+
+    textarea {
+      min-height: 92px;
+      padding: 10px;
+      line-height: 1.55;
+      resize: vertical;
+    }
+
+    .wide { grid-column: 1 / -1; }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      grid-column: 1 / -1;
+      padding-top: 8px;
+      border-top: 1px solid var(--line);
+    }
+
+    @media (max-width: 900px) {
+      .topbar { align-items: start; flex-direction: column; }
+      .toolbar { justify-content: flex-start; }
+      .sourceAdd { grid-template-columns: 1fr; }
+      .searchAdd { grid-template-columns: 1fr; }
+      .card { grid-template-columns: 1fr; }
+      .editor { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <div>
+        <h1>Dispatch Publisher</h1>
+        <p>候補を取得し、掲載文を整えて Published にします。[要編集] が残っている記事は公開できません。</p>
+      </div>
+      <div class="toolbar">
+        <div class="manualAdd">
+          <input id="manualUrl" type="url" placeholder="記事・note・YouTube URLを候補追加">
+          <button onclick="addManual()">URL追加</button>
+        </div>
+        <div class="sourceAdd">
+          <input id="noteSource" type="text" placeholder="noteユーザー名・URL・#タグ">
+          <input id="noteInclude" type="text" placeholder="含める語句・タグ">
+          <input id="noteExclude" type="text" placeholder="除外語句">
+          <button onclick="addNote()">note登録</button>
+        </div>
+        <div class="searchAdd">
+          <input id="searchQuery" type="text" placeholder="検索語句: Gemini,Workspace Studio,#NotebookLM">
+          <input id="searchInclude" type="text" placeholder="含める語句">
+          <input id="searchExclude" type="text" placeholder="除外語句">
+          <button onclick="addSearch()">検索登録</button>
+        </div>
+        <button class="primary" onclick="runScan()">最新記事を取得</button>
+        <button onclick="loadItems()">再読み込み</button>
+      </div>
+    </div>
+
+    <div id="message"></div>
+    <div class="grid" id="items"></div>
+  </div>
+
+  <script>
+    const message = document.querySelector('#message');
+    const items = document.querySelector('#items');
+
+    function escapeHtml(value) {
+      return String(value ?? '').replace(/[&<>"']/g, (char) => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;',
+      }[char]));
+    }
+
+    function setMessage(text, isError) {
+      if (!text) {
+        message.innerHTML = '';
+        return;
+      }
+      message.innerHTML = `<div class="message ${isError ? 'error' : ''}">${escapeHtml(text)}</div>`;
+    }
+
+    function selectOptions(current, options) {
+      return options.map((option) => (
+        `<option value="${escapeHtml(option)}" ${option === current ? 'selected' : ''}>${escapeHtml(option)}</option>`
+      )).join('');
+    }
+
+    function render(rows) {
+      if (!rows || !rows.length) {
+        items.innerHTML = '<article class="card"><p>候補はまだありません。最新記事を取得してください。</p></article>';
+        return;
+      }
+
+      items.innerHTML = rows.map((item) => `
+        <article class="card" data-id="${escapeHtml(item.id)}">
+          <aside class="sourceBox">
+            <div class="meta">
+              <span class="pill">${escapeHtml(item.status)}</span>
+              <span class="pill">${escapeHtml(item.sourceDate)}</span>
+              <span class="pill">${escapeHtml(item.priority || '中')}</span>
+              <span class="pill">${escapeHtml(item.sourceKind || 'feed')}</span>
+              <span class="pill">${escapeHtml(item.sourceTier || 'watch')}</span>
+            </div>
+            <h2 class="sourceTitle">${escapeHtml(item.sourceTitle || item.title)}</h2>
+            <p><a href="${escapeHtml(item.url)}" target="_blank" rel="noreferrer">公式記事を開く</a></p>
+            <p class="excerpt">${escapeHtml(item.sourceExcerpt || '元記事本文の抜粋はありません。')}</p>
+          </aside>
+
+          <section class="editor">
+            <label>分類
+              <select name="type">
+                ${selectOptions(item.type, ['速報', '活用', '注意'])}
+              </select>
+            </label>
+            <label>サービス
+              <input name="service" value="${escapeHtml(item.service)}">
+            </label>
+            <label>優先度
+              <select name="priority">
+                ${selectOptions(item.priority || '中', ['高', '中', '低'])}
+              </select>
+            </label>
+            <label>対象
+              <input name="audience" value="${escapeHtml(item.audience)}">
+            </label>
+            <label class="wide">掲載タイトル
+              <input name="title" value="${escapeHtml(item.title)}">
+            </label>
+            <label class="wide">3行まとめ
+              <textarea name="summary">${escapeHtml(item.summary)}</textarea>
+            </label>
+            <label class="wide">まず試すなら
+              <textarea name="tryThis">${escapeHtml(item.tryThis)}</textarea>
+            </label>
+            <label class="wide">注意点・未確認点
+              <textarea name="caution">${escapeHtml(item.caution)}</textarea>
+            </label>
+            <div class="actions">
+              <button onclick="saveDraft('${escapeHtml(item.id)}')">下書き保存</button>
+              <button class="primary" onclick="publish('${escapeHtml(item.id)}')">保存して公開</button>
+              <button class="warn" onclick="copyDraft('${escapeHtml(item.id)}')">掲載文コピー</button>
+              <button onclick="archive('${escapeHtml(item.id)}')">保留</button>
+              <button class="danger" onclick="rejectItem('${escapeHtml(item.id)}')">見送り</button>
+            </div>
+          </section>
+        </article>
+      `).join('');
+    }
+
+    function readDraft(id) {
+      const card = document.querySelector(`[data-id="${id}"]`);
+      const get = (name) => card.querySelector(`[name="${name}"]`).value.trim();
+      return {
+        id,
+        type: get('type'),
+        service: get('service'),
+        priority: get('priority'),
+        audience: get('audience'),
+        title: get('title'),
+        summary: get('summary'),
+        tryThis: get('tryThis'),
+        caution: get('caution'),
+      };
+    }
+
+    function loadItems() {
+      setMessage('読み込み中...');
+      google.script.run
+        .withSuccessHandler((rows) => {
+          setMessage('');
+          render(rows);
+        })
+        .withFailureHandler((error) => setMessage(error.message || error, true))
+        .getCandidateItems();
+    }
+
+    function runScan() {
+      setMessage('取得中...');
+      google.script.run
+        .withSuccessHandler((result) => {
+          setMessage(result);
+          loadItems();
+        })
+        .withFailureHandler((error) => setMessage(error.message || error, true))
+        .dailyScan();
+    }
+
+    function addManual() {
+      const input = document.querySelector('#manualUrl');
+      const url = input.value.trim();
+      if (!url) {
+        setMessage('追加したいURLを入力してください。', true);
+        return;
+      }
+      setMessage('URLを候補化しています...');
+      google.script.run
+        .withSuccessHandler((rows) => {
+          input.value = '';
+          setMessage('URLを候補に追加しました。掲載文を整えてください。');
+          render(rows);
+        })
+        .withFailureHandler((error) => setMessage(error.message || error, true))
+        .addManualCandidate(url);
+    }
+
+    function addNote() {
+      const input = document.querySelector('#noteSource');
+      const include = document.querySelector('#noteInclude');
+      const exclude = document.querySelector('#noteExclude');
+      const value = input.value.trim();
+      if (!value) {
+        setMessage('登録したいnoteのユーザー名、URL、RSS URLを入力してください。', true);
+        return;
+      }
+      setMessage('note取得元を登録しています...');
+      google.script.run
+        .withSuccessHandler((result) => {
+          input.value = '';
+          include.value = '';
+          exclude.value = '';
+          setMessage(`${result.message} 最新記事を取得する場合は「最新記事を取得」を押してください。`);
+        })
+        .withFailureHandler((error) => setMessage(error.message || error, true))
+        .addNoteSource(value, include.value.trim(), exclude.value.trim());
+    }
+
+    function addSearch() {
+      const input = document.querySelector('#searchQuery');
+      const include = document.querySelector('#searchInclude');
+      const exclude = document.querySelector('#searchExclude');
+      const value = input.value.trim();
+      if (!value) {
+        setMessage('登録したい検索語句を入力してください。', true);
+        return;
+      }
+      setMessage('検索取得元を登録しています...');
+      google.script.run
+        .withSuccessHandler((result) => {
+          input.value = '';
+          include.value = '';
+          exclude.value = '';
+          setMessage(`${result.message} 最新記事を取得する場合は「最新記事を取得」を押してください。`);
+        })
+        .withFailureHandler((error) => setMessage(error.message || error, true))
+        .addSearchSources(value, include.value.trim(), exclude.value.trim());
+    }
+
+    function saveDraft(id) {
+      setMessage('保存中...');
+      google.script.run
+        .withSuccessHandler((rows) => {
+          setMessage('下書きを保存しました。');
+          render(rows);
+        })
+        .withFailureHandler((error) => setMessage(error.message || error, true))
+        .saveItemDraft(readDraft(id));
+    }
+
+    function publish(id) {
+      setMessage('保存して公開中...');
+      google.script.run
+        .withSuccessHandler(() => {
+          google.script.run
+            .withSuccessHandler((rows) => {
+              setMessage('公開しました。社員向け画面に反映されます。');
+              render(rows);
+            })
+            .withFailureHandler((error) => setMessage(error.message || error, true))
+            .publishItem(id);
+        })
+        .withFailureHandler((error) => setMessage(error.message || error, true))
+        .saveItemDraft(readDraft(id));
+    }
+
+    function archive(id) {
+      google.script.run
+        .withSuccessHandler(render)
+        .withFailureHandler((error) => setMessage(error.message || error, true))
+        .archiveItem(id);
+    }
+
+    function rejectItem(id) {
+      google.script.run
+        .withSuccessHandler(render)
+        .withFailureHandler((error) => setMessage(error.message || error, true))
+        .rejectItem(id);
+    }
+
+    function copyDraft(id) {
+      const draft = readDraft(id);
+      const card = document.querySelector(`[data-id="${id}"]`);
+      const sourceUrl = card.querySelector('a').href;
+      const text = `【${draft.type} / ${draft.service}】\n${draft.title}\n\n3行まとめ:\n${draft.summary.split('\n').map((line) => `・${line}`).join('\n')}\n\n社内で関係ありそうな人:\n${draft.audience}\n\nまず試すなら:\n${draft.tryThis}\n\n注意点・未確認点:\n${draft.caution}\n\n元記事:\n${sourceUrl}`;
+      navigator.clipboard.writeText(text);
+      setMessage('掲載文をコピーしました。');
+    }
+
+    window.addEventListener('load', loadItems);
+  </script>
+</body>
+</html>
