@@ -77,6 +77,13 @@
       width: min(860px, 100%);
     }
 
+    .rssAdd {
+      display: grid;
+      grid-template-columns: minmax(220px, 1fr) minmax(160px, 0.8fr) minmax(170px, 0.8fr) minmax(150px, 0.7fr) auto;
+      gap: 8px;
+      width: min(1080px, 100%);
+    }
+
     .searchAdd {
       display: grid;
       grid-template-columns: minmax(220px, 1fr) minmax(180px, 0.8fr) minmax(150px, 0.7fr) auto;
@@ -245,6 +252,7 @@
       .topbar { align-items: start; flex-direction: column; }
       .toolbar { justify-content: flex-start; }
       .sourceAdd { grid-template-columns: 1fr; }
+      .rssAdd { grid-template-columns: 1fr; }
       .searchAdd { grid-template-columns: 1fr; }
       .card { grid-template-columns: 1fr; }
       .editor { grid-template-columns: 1fr; }
@@ -268,6 +276,13 @@
           <input id="noteInclude" type="text" placeholder="含める語句・タグ">
           <input id="noteExclude" type="text" placeholder="除外語句">
           <button onclick="addNote()">note登録</button>
+        </div>
+        <div class="rssAdd">
+          <input id="rssUrl" type="url" placeholder="RSS/Atom URL">
+          <input id="rssName" type="text" placeholder="取得元名">
+          <input id="rssInclude" type="text" placeholder="含める語句">
+          <input id="rssExclude" type="text" placeholder="除外語句">
+          <button onclick="addRss()">RSS登録</button>
         </div>
         <div class="searchAdd">
           <input id="searchQuery" type="text" placeholder="検索語句: Gemini,Workspace Studio,#NotebookLM">
@@ -449,6 +464,29 @@
         })
         .withFailureHandler((error) => setMessage(error.message || error, true))
         .addNoteSource(value, include.value.trim(), exclude.value.trim());
+    }
+
+    function addRss() {
+      const url = document.querySelector('#rssUrl');
+      const name = document.querySelector('#rssName');
+      const include = document.querySelector('#rssInclude');
+      const exclude = document.querySelector('#rssExclude');
+      const value = url.value.trim();
+      if (!value) {
+        setMessage('登録したいRSS/Atom URLを入力してください。', true);
+        return;
+      }
+      setMessage('RSS取得元を登録しています...');
+      google.script.run
+        .withSuccessHandler((result) => {
+          url.value = '';
+          name.value = '';
+          include.value = '';
+          exclude.value = '';
+          setMessage(`${result.message} 最新記事を取得する場合は「最新記事を取得」を押してください。`);
+        })
+        .withFailureHandler((error) => setMessage(error.message || error, true))
+        .addRssSource(value, name.value.trim(), include.value.trim(), exclude.value.trim());
     }
 
     function addSearch() {

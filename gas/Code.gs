@@ -257,6 +257,48 @@ function addNoteSource(input, includeKeywords, excludeKeywords) {
   };
 }
 
+function addRssSource(url, name, includeKeywords, excludeKeywords) {
+  assertAdmin_();
+  const normalizedUrl = normalizeUrl_(url);
+  if (!/^https?:\/\//i.test(normalizedUrl)) {
+    throw new Error('http または https のRSS/Atom URLを入力してください。');
+  }
+
+  const source = {
+    enabled: true,
+    name: compactText_(name) || hostnameFromUrl_(normalizedUrl),
+    kind: 'ブログ/RSS',
+    url: normalizedUrl,
+    tier: 'trusted',
+    includeKeywords: normalizeKeywordList_(includeKeywords),
+    excludeKeywords: normalizeKeywordList_(excludeKeywords),
+    tags: normalizeKeywordList_(includeKeywords),
+    queryHint: '投稿者画面から追加したRSS取得元',
+    notes: '一般ブログ。必要に応じて公式情報も確認する',
+  };
+
+  const sheet = getSourcesSheet_();
+  ensureSourceHeaders_(sheet);
+
+  const existing = getSourceRows_().find((row) => normalizeUrl_(row.url) === source.url);
+  if (existing) {
+    return {
+      added: false,
+      message: `RSS取得元は登録済みです: ${existing.name}`,
+      source: existing,
+    };
+  }
+
+  const items = fetchFeed_(source);
+  sheet.appendRow(CONFIG.SOURCE_HEADERS.map((header) => source[header]));
+
+  return {
+    added: true,
+    message: `RSS取得元を登録しました: ${source.name}。確認できた記事数: ${items.length} 件。`,
+    source,
+  };
+}
+
 function addSearchSources(query, includeKeywords, excludeKeywords) {
   assertAdmin_();
   const searchTerms = parseKeywordList_(query);
@@ -543,6 +585,18 @@ function seedDefaultSources_() {
       tags: '',
       queryHint: '外部ニュースの発見用',
       notes: '発見用。公開時は公式情報または一次情報で確認する',
+    },
+    {
+      enabled: true,
+      name: '吉積情報 コラボラボ',
+      kind: '企業ブログ',
+      url: 'https://www.yoshidumi.co.jp/collaboration-lab/rss.xml',
+      tier: 'trusted',
+      includeKeywords: 'Google Workspace,Gemini,NotebookLM,Workspace Studio,Gmail,Google Meet,Google Chat,Google Drive,Google Docs,Google Sheets,Google Slides,管理コンソール',
+      excludeKeywords: '求人,採用,株価,広告,セミナー,イベント',
+      tags: 'Google Workspace,Gemini',
+      queryHint: '吉積情報のWorkspace/Gemini関連記事',
+      notes: '一般ブログ。必要に応じて公式情報も確認する',
     },
   ];
 
