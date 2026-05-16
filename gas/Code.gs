@@ -340,7 +340,6 @@ function scanSources_() {
   log_('scanSources start');
   const sheet = getItemsSheet_();
   ensureHeaders_(sheet);
-  seedDefaultSources_();
 
   const existingRows = getRows_();
   log_(`existing item rows: ${existingRows.length}`);
@@ -561,6 +560,8 @@ function ensureSourceHeaders_(sheet) {
 function seedDefaultSources_() {
   const sheet = getSourcesSheet_();
   ensureSourceHeaders_(sheet);
+  if (sheet.getLastRow() > 1) return;
+
   const existingKeys = new Set(getSourceRows_().map((source) => normalizeUrl_(source.url) || source.name));
   const rows = [
     {
