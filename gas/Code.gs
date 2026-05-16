@@ -341,8 +341,19 @@ function scanSources_() {
   const sheet = getItemsSheet_();
   ensureHeaders_(sheet);
 
+  const rowsBeforeRefresh = getRows_();
+  const previouslyKnownSet = new Set(
+    rowsBeforeRefresh
+      .map((row) => normalizeUrl_(row.url))
+      .filter(Boolean)
+  );
+  const refreshedCandidateCount = clearCandidateRows_(sheet);
+  if (refreshedCandidateCount) {
+    log_(`cleared candidate rows: ${refreshedCandidateCount}`);
+  }
+
   const existingRows = getRows_();
-  log_(`existing item rows: ${existingRows.length}`);
+  log_(`existing item rows: ${existingRows.length}, refreshed candidate rows: ${refreshedCandidateCount}`);
   const existingSet = new Set(
     existingRows
       .map((row) => normalizeUrl_(row.url))
@@ -397,7 +408,7 @@ function scanSources_() {
       appendItem_(sheet, item);
       existingSet.add(key);
       addedCount += 1;
-      addedItems.push(item);
+      if (!previouslyKnownSet.has(key)) addedItems.push(item);
       log_(`add candidate: ${item.sourceDate} ${item.sourceName} / ${item.service} / ${item.sourceTitle}`);
     });
   });
@@ -405,7 +416,7 @@ function scanSources_() {
   notifyNewCandidates_(addedItems);
 
   const errorText = errors.length ? ` 取得失敗 ${errors.length} 件: ${errors.join(' / ')}` : '';
-  const result = `取得完了: 新規候補 ${addedCount} 件、重複 ${duplicateCount} 件、URLなし ${emptyUrlCount} 件、スキップ合計 ${skippedCount} 件、確認対象 ${fetchedCount} 件、取得元 ${sources.length} 件。${errorText}`;
+  const result = `取得完了: 候補リフレッシュ ${refreshedCandidateCount} 件、候補作成 ${addedCount} 件、通知対象 ${addedItems.length} 件、重複 ${duplicateCount} 件、URLなし ${emptyUrlCount} 件、スキップ合計 ${skippedCount} 件、確認対象 ${fetchedCount} 件、取得元 ${sources.length} 件。${errorText}`;
   log_(result);
   return result;
 }
@@ -756,6 +767,23 @@ function rowToObject_(row) {
       : value;
     return acc;
   }, {});
+}
+
+function clearCandidateRows_(sheet) {
+  ensureHeaders_(sheet);
+  const lastRow = sheet.getLastRow();
+  if (lastRow < 2) return 0;
+
+  const statusColumn = columnFor_('status');
+  const statuses = sheet.getRange(2, statusColumn, lastRow - 1, 1).getValues().flat();
+  let deletedCount = 0;
+  for (let index = statuses.length - 1; index >= 0; index -= 1) {
+    if (String(statuses[index] || '').trim() === 'Candidate') {
+      sheet.deleteRow(index + 2);
+      deletedCount += 1;
+    }
+  }
+  return deletedCount;
 }
 
 function appendItem_(sheet, item) {
