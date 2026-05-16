@@ -136,7 +136,7 @@
 
     .toolbar {
       display: grid;
-      grid-template-columns: minmax(220px, 1fr) auto;
+      grid-template-columns: minmax(220px, 1fr) auto auto;
       gap: 12px;
       margin-bottom: 16px;
     }
@@ -176,6 +176,26 @@
     .filters button.is-active {
       color: #06100c;
       background: var(--gold);
+    }
+
+    .admin-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 46px;
+      padding: 0 14px;
+      color: var(--ink);
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 850;
+      white-space: nowrap;
+    }
+
+    .admin-link:focus-visible {
+      outline: 2px solid var(--blue);
+      outline-offset: 2px;
     }
 
     .cards {
@@ -292,6 +312,7 @@
           <button type="button" data-filter="活用">活用</button>
           <button type="button" data-filter="注意">注意</button>
         </div>
+        <a class="admin-link" href="<?= publisherUrl ?>" target="_blank" rel="noreferrer">管理者画面</a>
       </div>
 
       <div class="cards" id="updatesGrid" aria-live="polite">
